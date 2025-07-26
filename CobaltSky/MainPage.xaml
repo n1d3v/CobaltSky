@@ -17,10 +17,12 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <phone:Pivot Title="CobaltSky">
             <phone:PivotItem Header="home">
-                <ListBox Margin="4,0,4,0">
-                    <ListBoxItem>
-                        <controls:PostControl />
-                    </ListBoxItem>
+                <ListBox x:Name="PostsView" Margin="4,0,4,0" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <controls:PostControl />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
             </phone:PivotItem>
             <phone:PivotItem Header="explore">
