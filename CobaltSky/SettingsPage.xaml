@@ -1,5 +1,5 @@
 ﻿<phone:PhoneApplicationPage
-    x:Class="CobaltSky.MainPage"
+    x:Class="CobaltSky.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
@@ -8,11 +8,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:CobaltSky.UserControls"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
     shell:SystemTray.IsVisible="True">
 
     <toolkit:TransitionService.NavigationInTransition>
@@ -37,36 +37,23 @@
     </toolkit:TransitionService.NavigationOutTransition>
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <phone:Pivot Title="CobaltSky">
-            <phone:PivotItem Header="home">
-                <ListBox x:Name="PostsView" Margin="4,0,4,0" HorizontalContentAlignment="Stretch">
+        <phone:Pivot Title="CobaltSky Settings">
+            <phone:PivotItem Header="account">
+                <ListBox x:Name="accountView" Margin="14,0,14,0" SelectionChanged="accountView_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <controls:PostControl />
+                            <controls:SettingsItem />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
             </phone:PivotItem>
-            <phone:PivotItem Header="explore">
+            <phone:PivotItem Header="appearance">
 
             </phone:PivotItem>
-            <phone:PivotItem Header="notifications">
+            <phone:PivotItem Header="about">
 
             </phone:PivotItem>
         </phone:Pivot>
     </Grid>
-    <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar>
-            <shell:ApplicationBarIconButton IconUri="Images\AppBar\search.png" Text="search" />
-            <shell:ApplicationBarIconButton x:Name="ComposeBar" IconUri="Images\AppBar\add.png" Text="new post" Click="ComposeBar_Click" />
-            <shell:ApplicationBarIconButton IconUri="Images\AppBar\messages.png" Text="chats" />
-            <shell:ApplicationBarIconButton x:Name="SettingsBar" IconUri="Images\AppBar\settings.png" Text="settings" Click="SettingsBar_Click"/>
 
-            <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="lists" />
-                <shell:ApplicationBarMenuItem Text="feeds" />
-                <shell:ApplicationBarMenuItem Text="my profile" />
-            </shell:ApplicationBar.MenuItems>
-        </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>
