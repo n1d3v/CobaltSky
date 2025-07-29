@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using CobaltSky.Classes;
+using System.Resources;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;        
+using Microsoft.Phone.Shell;
 using CobaltSky.Resources;
 
 namespace CobaltSky

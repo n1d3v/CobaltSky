@@ -1,5 +1,5 @@
 ﻿<phone:PhoneApplicationPage
-    x:Class="CobaltSky.LoginPage"
+    x:Class="CobaltSky.FinishPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
@@ -7,11 +7,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
     shell:SystemTray.IsVisible="True">
 
     <toolkit:TransitionService.NavigationInTransition>
@@ -34,7 +34,7 @@
             </toolkit:NavigationOutTransition.Forward>
         </toolkit:NavigationOutTransition>
     </toolkit:TransitionService.NavigationOutTransition>
-    
+
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -43,31 +43,18 @@
 
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="CobaltSky" Margin="12,17,0,0" FontSize="22.667" FontWeight="SemiBold" Style="{StaticResource PhoneTextNormalStyle}"  />
-            <TextBlock Text="log in" Margin="9,-7,0,-12" Style="{StaticResource PhoneTextTitle1Style}"/>
-            <TextBlock Text="Once you log in, we'll go to the next page and continue the setup for you." TextWrapping="Wrap" Margin="12,17,0,0" Style="{StaticResource PhoneTextNormalStyle}"  />
+            <TextBlock Text="you're all set!" Margin="9,-7,0,-12" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Text="CobaltSky is now finished setting up. You can now continue to the main page. We hope you enjoy it!" TextWrapping="Wrap" Margin="12,17,0,0" Style="{StaticResource PhoneTextNormalStyle}"  />
         </StackPanel>
 
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="26,0">
-            <StackPanel x:Name="TextBoxPanel">
-                <StackPanel Margin="0,0,0,8">
-                    <TextBlock Text="Enter your handle (username.bsky.social)" Opacity="0.5" Margin="0,0,0,12" />
-                    <TextBox x:Name="handleBox" Margin="-12" Padding="10,5,10,5" Background="White" BorderThickness="2" />
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="Enter your app password (xxxx-xxxx-xxxx-xxxx)" Opacity="0.5" Margin="0,0,0,12" />
-                    <Grid>
-                        <PasswordBox x:Name="passwordBox" Margin="-12" Padding="10,5,10,5" Background="White" BorderThickness="2" PasswordChanged="passwordBox_PasswordChanged" />
-                        <TextBlock x:Name="visiblePW" Foreground="Black" VerticalAlignment="Center" Padding="15,5,15,5" IsHitTestVisible="False"/>
-                    </Grid>
-                </StackPanel>
-                <CheckBox x:Name="pwShowCheck" Content="Show your password" Margin="-12,0,-12,0" Checked="pwShowCheck_Checked" Unchecked="pwShowCheck_Unchecked"/>
-            </StackPanel>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Image Source="Images\Setup\wp-bluesky.png" Width="225" Height="400" Margin="0,12,0,0" VerticalAlignment="Top" />
         </Grid>
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar>
             <shell:ApplicationBarIconButton x:Name="GoBackButton" IconUri="Images\Setup\back.png" Text="go back" Click="GoBackButton_Click" />
-            <shell:ApplicationBarIconButton x:Name="NextButton" IconUri="Images\Setup\next.png" Text="next page" Click="NextButton_Click" IsEnabled="False" />
+            <shell:ApplicationBarIconButton x:Name="NextButton" IconUri="Images\Setup\next.png" Text="next page" Click="NextButton_Click" />
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

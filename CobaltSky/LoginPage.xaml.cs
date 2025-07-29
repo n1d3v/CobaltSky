@@ -1,77 +1,111 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Windows;
-using System.IO;
 using System.Diagnostics;
-using System.Runtime.Serialization.Json;
-using System.Runtime.Serialization;
-using Microsoft.Phone.Controls;
+using System.IO;
+using System.Windows.Controls;
 using CobaltSky.Classes;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Windows.Navigation;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
 
 namespace CobaltSky
 {
     public partial class LoginPage : PhoneApplicationPage
     {
+        private string pwString;
         public LoginPage()
         {
             InitializeComponent();
+            visiblePW.FontSize = passwordBox.FontSize;
         }
 
-        private void goBackButton_Click(object sender, RoutedEventArgs e)
+        private void GoBackButton_Click(object sender, EventArgs e)
         {
-            if (NavigationService.CanGoBack)
-            {
-                NavigationService.GoBack();
-            }
+            NavigationService.Navigate(new Uri("/WelcomePage.xaml", UriKind.Relative));
         }
 
-        private void loginButton_Click(object sender, RoutedEventArgs e)
+        private async void NextButton_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("Sending request to Bluesky's servers...");
             var api = new CobaltSky.Classes.API();
             var login = new LoginRequest
             {
-                identifier = usernameTB.Text,
-                password = passwordTB.Password
+                identifier = handleBox.Text,
+                password = passwordBox.Password
             };
 
-            api.APISend(login, response => {
-                Debug.WriteLine("Response from Bluesky's servers: " + response.ToString());
-                if (response.ToString().Contains("accessJwt"))
+            await api.SendAPI("/com.atproto.server.createSession", "POST", login, (response) =>
+            {
+                Debug.WriteLine($"Response from Bluesky's servers: {response}");
+                if (response.Contains("accessJwt"))
                 {
+                    Debug.WriteLine("Login is successful, saving the necessary details to settings!");
                     string json = response.ToString();
-                    var serializer = new DataContractJsonSerializer(typeof(LoginResponse));
+                    var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
                     using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
                     {
-                        var result = (LoginResponse)serializer.ReadObject(ms);
+                        var result = (LoginRoot)serializer.ReadObject(ms);
 
-                        string accessJwt = result.AccessJwt;
-                        string bskyDid = result.Did;
+                        // Read the results
+                        string accessJwt = result.bskyJwt;
+                        string refreshJwt = result.bskyRefJwt;
+                        string bskyDid = result.bskyDid;
 
-                        SettingsManager.AccessJwt = accessJwt;
-                        SettingsManager.BSkyDid = bskyDid;
+                        // Save the JWT and DID to settings
+                        SettingsMgr.AccessJwt = accessJwt;
+                        SettingsMgr.RefreshJwt = refreshJwt;
+                        SettingsMgr.BskyDid = bskyDid;
 
+                        // Show the values to confirm
                         Debug.WriteLine($"Saved accessJwt to settings: {accessJwt}");
+                        Debug.WriteLine($"Saved refreshJwt to settings: {refreshJwt}");
                         Debug.WriteLine($"Saved bskyDid to settings: {bskyDid}");
                     }
-
-                    MessageBox.Show("CobaltSky will now redirect you to the home page to load posts.", "login successful", MessageBoxButton.OK);
-                    NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
+                    NavigationService.Navigate(new Uri("/FeedPage.xaml", UriKind.Relative));
                 }
-                else if (response.ToString().Contains("Unauthorized"))
+                else
                 {
-                    MessageBox.Show("Please double check your password and username are correct.", "login failed", MessageBoxButton.OK);
+                    MessageBox.Show("Login has failed, please double-check your handle and password before continuing.", "login unsuccessful", MessageBoxButton.OK);
                 }
-            }, "/com.atproto.server.createSession", null, "POST");
+            });
+        }
+
+        private void passwordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (handleBox.Text.Length > 0 && passwordBox.Password.Length > 0)
+            {
+                ((ApplicationBarIconButton)ApplicationBar.Buttons[1]).IsEnabled = true;
+            }
+        }
+
+        private void pwShowCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            pwString = passwordBox.Password;
+            passwordBox.Password = string.Empty;
+            passwordBox.IsHitTestVisible = false;
+            visiblePW.Text = pwString;
+        }
+
+        private void pwShowCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            passwordBox.Password = pwString;
+            passwordBox.IsHitTestVisible = true;
+            visiblePW.Text = string.Empty;
         }
 
         [DataContract]
-        public class LoginResponse
+        public class LoginRoot
         {
-            [DataMember(Name = "accessJwt")]
-            public string AccessJwt { get; set; }
-
-            [DataMember(Name = "did")]
-            public string Did { get; set; }
+            [DataMember (Name = "did")]
+            public string bskyDid { get; set; }
+            [DataMember (Name = "accessJwt")]
+            public string bskyJwt { get; set; }
+            [DataMember (Name = "refreshJwt")]
+            public string bskyRefJwt { get; set; }
         }
 
         public class LoginRequest
