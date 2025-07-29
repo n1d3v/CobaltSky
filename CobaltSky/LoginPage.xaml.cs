@@ -17,6 +17,8 @@ namespace CobaltSky
 {
     public partial class LoginPage : PhoneApplicationPage
     {
+        private string token = SettingsMgr.AccessJwt;
+        private string did = SettingsMgr.BskyDid;
         private string pwString;
         public LoginPage()
         {
@@ -40,10 +42,8 @@ namespace CobaltSky
 
             await api.SendAPI("/com.atproto.server.createSession", "POST", login, (response) =>
             {
-                Debug.WriteLine($"Response from Bluesky's servers: {response}");
                 if (response.Contains("accessJwt"))
                 {
-                    Debug.WriteLine("Login is successful, saving the necessary details to settings!");
                     string json = response.ToString();
                     var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
                     using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
@@ -59,11 +59,6 @@ namespace CobaltSky
                         SettingsMgr.AccessJwt = accessJwt;
                         SettingsMgr.RefreshJwt = refreshJwt;
                         SettingsMgr.BskyDid = bskyDid;
-
-                        // Show the values to confirm
-                        Debug.WriteLine($"Saved accessJwt to settings: {accessJwt}");
-                        Debug.WriteLine($"Saved refreshJwt to settings: {refreshJwt}");
-                        Debug.WriteLine($"Saved bskyDid to settings: {bskyDid}");
                     }
                     NavigationService.Navigate(new Uri("/FeedPage.xaml", UriKind.Relative));
                 }

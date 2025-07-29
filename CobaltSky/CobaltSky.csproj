@@ -114,6 +114,9 @@
     <Compile Include="StallPage.xaml.cs">
       <DependentUpon>StallPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\PostItem.xaml.cs">
+      <DependentUpon>PostItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WelcomePage.xaml.cs">
       <DependentUpon>WelcomePage.xaml</DependentUpon>
     </Compile>
@@ -149,6 +152,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\PostItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WelcomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -160,7 +167,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\AppManifest.xml" />
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
@@ -195,6 +204,13 @@
     </Content>
     <Content Include="Images\CobaltSkyWM.png" />
     <Content Include="Images\CobaltSkyLogo.png" />
+    <Content Include="Images\Home\PostControl\Selected\comment.png" />
+    <Content Include="Images\Home\PostControl\Selected\like.png" />
+    <Content Include="Images\Home\PostControl\Selected\repost.png" />
+    <Content Include="Images\Home\PostControl\Unselected\comment.png" />
+    <Content Include="Images\Home\PostControl\Unselected\like.png" />
+    <Content Include="Images\Home\PostControl\Unselected\repost.png" />
+    <Content Include="Images\Home\user-pfp.png" />
     <Content Include="Images\Setup\back.png" />
     <Content Include="Images\Setup\next.png" />
     <Content Include="Images\Setup\wp-bluesky.png" />
@@ -229,7 +245,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="UserControls\" />
+    <Folder Include="Images\Home\AppBar\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

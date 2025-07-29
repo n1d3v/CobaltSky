@@ -15,7 +15,10 @@ namespace CobaltSky
     {
         private string token = SettingsMgr.AccessJwt;
         private string tokenRef = SettingsMgr.RefreshJwt;
+        private string userHandle = SettingsMgr.BskyHandle;
         private string did = SettingsMgr.BskyDid;
+        private string selectedFeed = SettingsMgr.FeedSelection;
+        private string userTopics = SettingsMgr.SelectedTopics.ToLower().Replace(" ", ""); // Make it compatible with how Bluesky does it
         private bool _refreshRunning = false; // Needed for the refresh
 
         public HomePage()
@@ -27,7 +30,12 @@ namespace CobaltSky
         private async void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             LoadStringsAndValues();
-            await RefreshJWTTimer(5); // Refreshes it every 5 minutes
+            // Kinda messy but alright, gotta do what you gotta do.
+            await RefreshJWT();
+            Task.Factory.StartNew(() => RefreshJWTTimer(5));
+            
+            // Actual API shit now...
+            await LoadPosts();
         }
 
         // We need this so the user doesn't get unexpectedly logged out when requesting from the servers
@@ -36,6 +44,15 @@ namespace CobaltSky
             if (_refreshRunning) return;
             _refreshRunning = true;
 
+            while (true)
+            {
+                await RefreshJWT();
+                await Task.Delay(TimeSpan.FromMinutes(timerMin));
+            }
+        }
+
+        private async Task RefreshJWT()
+        {
             var api = new CobaltSky.Classes.API();
             var headers = new Dictionary<string, string>
             {
@@ -45,38 +62,60 @@ namespace CobaltSky
                 { "authorization", $"Bearer {tokenRef}" }
             };
 
-            while (true)
+            await api.SendAPI("/com.atproto.server.refreshSession", "POST", null, (response) =>
             {
-                await api.SendAPI("/com.atproto.server.refreshSession", "POST", null, (response) =>
+                Debug.WriteLine("Refreshing the Bluesky token!");
+                Debug.WriteLine($"Response from Bluesky's servers: {response}");
+
+                var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
+                using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response)))
                 {
-                    Debug.WriteLine("Refreshing the Bluesky token!");
-                    Debug.WriteLine($"Response from Bluesky's servers: {response}");
+                    var result = (LoginRoot)serializer.ReadObject(ms);
 
-                    // Reused from LoginPage.xaml.cs (with a few minor changes...)
-                    var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
-                    using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response)))
-                    {
-                        var result = (LoginRoot)serializer.ReadObject(ms);
+                    string accessJwt = result.bskyJwt;
+                    string refreshJwt = result.bskyRefJwt;
+                    string bskyDid = result.bskyDid;
 
-                        // Read the results
-                        string accessJwt = result.bskyJwt;
-                        string refreshJwt = result.bskyRefJwt;
-                        string bskyDid = result.bskyDid;
+                    SettingsMgr.AccessJwt = accessJwt;
+                    SettingsMgr.RefreshJwt = refreshJwt;
+                    SettingsMgr.BskyDid = bskyDid;
+                }
+            }, headers);
+        }
 
-                        // Save the JWT and DID to settings
-                        SettingsMgr.AccessJwt = accessJwt;
-                        SettingsMgr.RefreshJwt = refreshJwt;
-                        SettingsMgr.BskyDid = bskyDid;
 
-                        // Show the values to confirm
-                        Debug.WriteLine($"Saved accessJwt to settings: {accessJwt}");
-                        Debug.WriteLine($"Saved refreshJwt to settings: {refreshJwt}");
-                        Debug.WriteLine($"Saved bskyDid to settings: {bskyDid}");
-                    }
-                }, headers);
+        private async Task LoadPosts()
+        {
+            var api = new CobaltSky.Classes.API();
+            var headers = new Dictionary<string, string>
+            {
+                { "Accept", "*/*" },
+                { "Accept-Language", "en" },
+                { "atproto-accept-labelers", did },
+                { "authorization", $"Bearer {token}" },
+                { "x-bsky-topics", userTopics }
+            };
 
-                await Task.Delay(TimeSpan.FromMinutes(timerMin));
+            // Here is where we generate a URL for what we are gonna get
+            string urlNeeded = null;
+            string encFeed = null;
+            if (selectedFeed == "Following")
+            {
+                urlNeeded = "/app.bsky.feed.getTimeline";
             }
+            if (selectedFeed == "Topics")
+            {
+                Debug.WriteLine($"The value of BskyDidPref is {SettingsMgr.BskyDidPref}");
+                encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
+                urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=30";
+            }
+            Debug.WriteLine($"Generated endpoint: {urlNeeded}");
+
+            await api.SendAPI(urlNeeded, "GET", null, (response) =>
+            {
+                // Keep this here for later!
+                Debug.WriteLine($"Response from Bluesky's servers (urlNeeded): {response}");
+            }, headers);
         }
 
         private void LoadStringsAndValues()

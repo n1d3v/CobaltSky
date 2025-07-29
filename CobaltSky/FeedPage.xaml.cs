@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Windows;
+using System.Text;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -36,6 +37,13 @@ namespace CobaltSky
                 new FeedOptionData { Title = "Topics I'm interested in" },
                 new FeedOptionData { Title = "Combine both to one page" }
             };
+
+            Loaded += FeedPage_Loaded;
+        }
+
+        private async void FeedPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            await FetchDID();
         }
 
         public void ChangeCustomizeDesc()
@@ -56,7 +64,6 @@ namespace CobaltSky
 
             await api.SendAPI($"/app.bsky.actor.getProfile?actor={did}", "GET", null, response =>
             {
-                Debug.WriteLine($"Response from Bluesky's servers: {response}");
                 string json = response.ToString();
                 var serializer = new DataContractJsonSerializer(typeof(UserRoot));
                 using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
@@ -65,12 +72,45 @@ namespace CobaltSky
 
                     // Read the results
                     _displayName = result.bskyDName;
-
-                    // Show the values to confirm
-                    Debug.WriteLine($"Saved displayName to variable: {_displayName}");
+                    SettingsMgr.BskyHandle = result.bskyName;
 
                     // Add the customize feed text
                     ChangeCustomizeDesc();
+                }
+            }, headers);
+        }
+
+        public async Task FetchDID()
+        {
+            var api = new CobaltSky.Classes.API();
+            var headers = new Dictionary<string, string>
+            {
+                { "Accept", "*/*" },
+                { "Accept-Language", "en" },
+                { "atproto-accept-labelers", did },
+                { "authorization", $"Bearer {token}" }
+            };
+
+            // Basically, we need to get another DID since for fetching posts it's different for some reason
+            // I don't know why Bluesky does this, but whatever, atleast now it's implemented.
+            await api.SendAPI("/app.bsky.actor.getPreferences", "GET", null, (res) =>
+            {
+                Debug.WriteLine($"Response from Bluesky's server (getPreferences): {res}");
+
+                var serializer = new DataContractJsonSerializer(typeof(PreferencesRoot));
+                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(res)))
+                {
+                    var responseObj = (PreferencesRoot)serializer.ReadObject(ms);
+
+                    var feed = responseObj.Preferences
+                        .Find(p => p.Type == "app.bsky.actor.defs#savedFeedsPrefV2")?
+                        .Items?
+                        .Find(i => i.Type == "feed");
+
+                    if (feed != null)
+                    {
+                        SettingsMgr.BskyDidPref = feed.Value;
+                    }
                 }
             }, headers);
         }
@@ -80,6 +120,41 @@ namespace CobaltSky
         {
             [DataMember (Name = "displayName")]
             public string bskyDName { get; set; }
+            [DataMember (Name = "handle")]
+            public string bskyName { get; set; }
+        }
+
+        [DataContract]
+        class PreferencesRoot
+        {
+            [DataMember(Name = "preferences")]
+            public List<PreferenceItem> Preferences { get; set; }
+        }
+
+        [DataContract]
+        class PreferenceItem
+        {
+            [DataMember(Name = "$type")]
+            public string Type { get; set; }
+
+            [DataMember(Name = "items")]
+            public List<FeedItem> Items { get; set; }
+        }
+
+        [DataContract]
+        class FeedItem
+        {
+            [DataMember(Name = "type")]
+            public string Type { get; set; }
+
+            [DataMember(Name = "value")]
+            public string Value { get; set; }
+
+            [DataMember(Name = "pinned")]
+            public bool Pinned { get; set; }
+
+            [DataMember(Name = "id")]
+            public string Id { get; set; }
         }
 
         private void NextButton_Click(object sender, EventArgs e)
