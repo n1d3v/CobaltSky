@@ -1,4 +1,7 @@
-﻿<phone:PhoneApplicationPage
+﻿<!-- The reason this is needed is because when you do it in WelcomePage.xaml.cs -->
+<!-- It will look insanely ugly as you will be able to the see the welcome page for a split second before transitioning -->
+<!-- This does the same thing, but it's fine as it won't look as bad, dare I say it even looks good. -->
+<phone:PhoneApplicationPage
     x:Class="CobaltSky.StallPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

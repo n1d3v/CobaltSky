@@ -84,6 +84,7 @@ namespace CobaltSky
 
         private void NextButton_Click(object sender, EventArgs e)
         {
+            SettingsMgr.SelectedTopics = TopicsBox.Text;
             NavigationService.Navigate(new Uri("/FinishPage.xaml", UriKind.Relative));
         }
 

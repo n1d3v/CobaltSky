@@ -27,6 +27,7 @@ namespace CobaltSky
         {
             // This delay is to make the transition not look ugly, my bad if it makes the experience annoying.
             await Task.Delay(1000);
+            Debug.WriteLine($"FinishedWelcome's state is {SettingsMgr.FinishedWelcome.ToString()}");
             if (SettingsMgr.FinishedWelcome == true)
             {
                 // Lets refresh the token while we are at it...
