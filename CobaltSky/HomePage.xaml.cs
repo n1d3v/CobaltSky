@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Windows;
 using CobaltSky.Classes;
 using Microsoft.Phone.Controls;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace CobaltSky
 {
@@ -32,8 +31,8 @@ namespace CobaltSky
             LoadStringsAndValues();
             // Kinda messy but alright, gotta do what you gotta do.
             await RefreshJWT();
-            Task.Factory.StartNew(() => RefreshJWTTimer(5));
-            
+            await Task.Factory.StartNew(() => RefreshJWTTimer(5));
+
             // Actual API shit now...
             await LoadPosts();
         }
@@ -67,22 +66,13 @@ namespace CobaltSky
                 Debug.WriteLine("Refreshing the Bluesky token!");
                 Debug.WriteLine($"Response from Bluesky's servers: {response}");
 
-                var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
-                using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response)))
-                {
-                    var result = (LoginRoot)serializer.ReadObject(ms);
+                var result = JsonConvert.DeserializeObject<LoginRoot>(response);
 
-                    string accessJwt = result.bskyJwt;
-                    string refreshJwt = result.bskyRefJwt;
-                    string bskyDid = result.bskyDid;
-
-                    SettingsMgr.AccessJwt = accessJwt;
-                    SettingsMgr.RefreshJwt = refreshJwt;
-                    SettingsMgr.BskyDid = bskyDid;
-                }
+                SettingsMgr.AccessJwt = result.bskyJwt;
+                SettingsMgr.RefreshJwt = result.bskyRefJwt;
+                SettingsMgr.BskyDid = result.bskyDid;
             }, headers);
         }
-
 
         private async Task LoadPosts()
         {
@@ -99,6 +89,7 @@ namespace CobaltSky
             // Here is where we generate a URL for what we are gonna get
             string urlNeeded = null;
             string encFeed = null;
+
             if (selectedFeed == "Following")
             {
                 urlNeeded = "/app.bsky.feed.getTimeline";
@@ -109,6 +100,7 @@ namespace CobaltSky
                 encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
                 urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=30";
             }
+
             Debug.WriteLine($"Generated endpoint: {urlNeeded}");
 
             await api.SendAPI(urlNeeded, "GET", null, (response) =>
@@ -122,27 +114,22 @@ namespace CobaltSky
         {
             // Again, kinda a mess not gonna lie...
             if (SettingsMgr.FeedSelection == "Following")
-            {
                 ModifiablePage.Header = "topics";
-            }
+
             if (SettingsMgr.FeedSelection == "Topics")
-            {
                 ModifiablePage.Header = "following";
-            }
+
             if (SettingsMgr.FeedSelection == "Both")
-            {
                 ModifiablePage.Visibility = Visibility.Collapsed;
-            }
         }
 
-        [DataContract]
         public class LoginRoot
         {
-            [DataMember(Name = "did")]
+            [JsonProperty("did")]
             public string bskyDid { get; set; }
-            [DataMember(Name = "accessJwt")]
+            [JsonProperty("accessJwt")]
             public string bskyJwt { get; set; }
-            [DataMember(Name = "refreshJwt")]
+            [JsonProperty("refreshJwt")]
             public string bskyRefJwt { get; set; }
         }
     }

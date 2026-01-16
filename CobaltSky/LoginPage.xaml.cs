@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
-using System.Diagnostics;
-using System.IO;
-using System.Windows.Controls;
-using CobaltSky.Classes;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Newtonsoft.Json;
+using CobaltSky.Classes;
 
 namespace CobaltSky
 {
@@ -20,6 +13,7 @@ namespace CobaltSky
         private string token = SettingsMgr.AccessJwt;
         private string did = SettingsMgr.BskyDid;
         private string pwString;
+
         public LoginPage()
         {
             InitializeComponent();
@@ -33,40 +27,43 @@ namespace CobaltSky
 
         private async void NextButton_Click(object sender, EventArgs e)
         {
-            var api = new CobaltSky.Classes.API();
+            var api = new API();
             var login = new LoginRequest
             {
                 identifier = handleBox.Text,
                 password = passwordBox.Password
             };
 
-            await api.SendAPI("/com.atproto.server.createSession", "POST", login, (response) =>
+            ShowProgressIndicator(true, "Attempting to log in...");
+
+            await api.SendAPI("/com.atproto.server.createSession", "POST", login, response =>
             {
-                if (response.Contains("accessJwt"))
+                try
                 {
-                    string json = response.ToString();
-                    var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
-                    using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
+                    var result = JsonConvert.DeserializeObject<LoginRoot>(response);
+
+                    if (!string.IsNullOrEmpty(result?.AccessJwt))
                     {
-                        var result = (LoginRoot)serializer.ReadObject(ms);
-
-                        // Read the results
-                        string accessJwt = result.bskyJwt;
-                        string refreshJwt = result.bskyRefJwt;
-                        string bskyDid = result.bskyDid;
-
-                        // Save the JWT and DID to settings
-                        SettingsMgr.AccessJwt = accessJwt;
-                        SettingsMgr.RefreshJwt = refreshJwt;
-                        SettingsMgr.BskyDid = bskyDid;
+                        SettingsMgr.AccessJwt = result.AccessJwt;
+                        SettingsMgr.RefreshJwt = result.RefreshJwt;
+                        SettingsMgr.BskyDid = result.Did;
+                        
+                        NavigationService.Navigate(new Uri("/FeedPage.xaml", UriKind.Relative));
                     }
-                    NavigationService.Navigate(new Uri("/FeedPage.xaml", UriKind.Relative));
+                    else
+                    {
+                        throw new Exception();
+                    }
                 }
-                else
+                catch
                 {
-                    MessageBox.Show("Login has failed, please double-check your handle and password before continuing.", "login unsuccessful", MessageBoxButton.OK);
+                    MessageBox.Show(
+                        "Login has failed, please double-check your handle and password before continuing.",
+                        "login unsuccessful",
+                        MessageBoxButton.OK);
                 }
             });
+            ShowProgressIndicator(false, null);
         }
 
         private void passwordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -92,15 +89,26 @@ namespace CobaltSky
             visiblePW.Text = string.Empty;
         }
 
-        [DataContract]
+        private void ShowProgressIndicator(bool isVisible, string text = "")
+        {
+            ProgressIndicator progressIndicator = new ProgressIndicator
+            {
+                IsIndeterminate = true,
+                IsVisible = isVisible,
+                Text = text
+            };
+
+            SystemTray.SetProgressIndicator(this, progressIndicator);
+        }
+
         public class LoginRoot
         {
-            [DataMember (Name = "did")]
-            public string bskyDid { get; set; }
-            [DataMember (Name = "accessJwt")]
-            public string bskyJwt { get; set; }
-            [DataMember (Name = "refreshJwt")]
-            public string bskyRefJwt { get; set; }
+            [JsonProperty("did")]
+            public string Did { get; set; }
+            [JsonProperty("accessJwt")]
+            public string AccessJwt { get; set; }
+            [JsonProperty("refreshJwt")]
+            public string RefreshJwt { get; set; }
         }
 
         public class LoginRequest

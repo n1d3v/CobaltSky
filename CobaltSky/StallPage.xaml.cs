@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Windows;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Collections.Generic;
 using System.Windows.Navigation;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Phone.Controls;
 using CobaltSky.Classes;
+using Newtonsoft.Json;
 
 namespace CobaltSky
 {
@@ -22,13 +20,14 @@ namespace CobaltSky
             InitializeComponent();
             Loaded += StallPage_Loaded;
         }
-    
+
         private async void StallPage_Loaded(object sender, RoutedEventArgs e)
         {
             // This delay is to make the transition not look ugly, my bad if it makes the experience annoying.
             await Task.Delay(1000);
-            Debug.WriteLine($"FinishedWelcome's state is {SettingsMgr.FinishedWelcome.ToString()}");
-            if (SettingsMgr.FinishedWelcome == true)
+            Debug.WriteLine($"FinishedWelcome's state is {SettingsMgr.FinishedWelcome}");
+
+            if (SettingsMgr.FinishedWelcome)
             {
                 // Lets refresh the token while we are at it...
                 var api = new CobaltSky.Classes.API();
@@ -45,29 +44,19 @@ namespace CobaltSky
                     Debug.WriteLine("Refreshing the Bluesky token!");
                     Debug.WriteLine($"Response from Bluesky's servers: {response}");
 
-                    // Reused from LoginPage.xaml.cs
-                    string json = response.ToString();
-                    var serializer = new DataContractJsonSerializer(typeof(LoginRoot));
-                    using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
-                    {
-                        var result = (LoginRoot)serializer.ReadObject(ms);
+                    var result = JsonConvert.DeserializeObject<LoginRoot>(response);
 
-                        // Read the results
-                        string accessJwt = result.bskyJwt;
-                        string refreshJwt = result.bskyRefJwt;
-                        string bskyDid = result.bskyDid;
+                    // Save the JWT and DID to settings
+                    SettingsMgr.AccessJwt = result.bskyJwt;
+                    SettingsMgr.RefreshJwt = result.bskyRefJwt;
+                    SettingsMgr.BskyDid = result.bskyDid;
 
-                        // Save the JWT and DID to settings
-                        SettingsMgr.AccessJwt = accessJwt;
-                        SettingsMgr.RefreshJwt = refreshJwt;
-                        SettingsMgr.BskyDid = bskyDid;
-
-                        // Show the values to confirm
-                        Debug.WriteLine($"Saved accessJwt to settings: {accessJwt}");
-                        Debug.WriteLine($"Saved refreshJwt to settings: {refreshJwt}");
-                        Debug.WriteLine($"Saved bskyDid to settings: {bskyDid}");
-                    }
+                    // Show the values to confirm
+                    Debug.WriteLine($"Saved accessJwt to settings: {result.bskyJwt}");
+                    Debug.WriteLine($"Saved refreshJwt to settings: {result.bskyRefJwt}");
+                    Debug.WriteLine($"Saved bskyDid to settings: {result.bskyDid}");
                 }, headers);
+
                 NavigationService.Navigate(new Uri("/HomePage.xaml", UriKind.Relative));
             }
             else
@@ -76,14 +65,13 @@ namespace CobaltSky
             }
         }
 
-        [DataContract]
         public class LoginRoot
         {
-            [DataMember(Name = "did")]
+            [JsonProperty("did")]
             public string bskyDid { get; set; }
-            [DataMember(Name = "accessJwt")]
+            [JsonProperty("accessJwt")]
             public string bskyJwt { get; set; }
-            [DataMember(Name = "refreshJwt")]
+            [JsonProperty("refreshJwt")]
             public string bskyRefJwt { get; set; }
         }
     }

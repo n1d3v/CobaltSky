@@ -43,7 +43,7 @@
 
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="CobaltSky" Margin="12,17,0,0" FontSize="22.667" FontWeight="SemiBold" Style="{StaticResource PhoneTextNormalStyle}"  />
-            <TextBlock Text="log in" Margin="9,-7,0,-12" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Text="log in!" Margin="9,-7,0,-12" Style="{StaticResource PhoneTextTitle1Style}"/>
             <TextBlock Text="Once you log in, we'll go to the next page and continue the setup for you." TextWrapping="Wrap" Margin="12,17,0,0" Style="{StaticResource PhoneTextNormalStyle}"  />
         </StackPanel>
 
