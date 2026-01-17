@@ -122,7 +122,6 @@ namespace CobaltSky
 
             await api.SendAPI(urlNeeded, "GET", null, (response) =>
             {
-                // Keep this here for later!
                 Debug.WriteLine($"Response from Bluesky's servers (urlNeeded): {response}");
             }, headers);
         }
@@ -148,6 +147,11 @@ namespace CobaltSky
             public string bskyJwt { get; set; }
             [JsonProperty("refreshJwt")]
             public string bskyRefJwt { get; set; }
+        }
+
+        private void PostButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/PostPage.xaml", UriKind.Relative));
         }
     }
 }

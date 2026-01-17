@@ -51,5 +51,10 @@
             </phone:PivotItem>
         </phone:Pivot>
     </StackPanel>
-
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar>
+            <shell:ApplicationBarIconButton x:Name="PostButton" IconUri="Images\Home\AppBar\add.png" Text="add a post" Click="PostButton_Click" />
+            <shell:ApplicationBarIconButton x:Name="SearchButton" IconUri="Images\Home\AppBar\search.png" Text="search" />
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

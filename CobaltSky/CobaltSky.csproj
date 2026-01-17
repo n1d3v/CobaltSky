@@ -111,6 +111,9 @@
     <Compile Include="LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PostPage.xaml.cs">
+      <DependentUpon>PostPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StallPage.xaml.cs">
       <DependentUpon>StallPage.xaml</DependentUpon>
     </Compile>
@@ -145,6 +148,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PostPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -204,6 +211,8 @@
     </Content>
     <Content Include="Images\CobaltSkyWM.png" />
     <Content Include="Images\CobaltSkyLogo.png" />
+    <Content Include="Images\Home\AppBar\add.png" />
+    <Content Include="Images\Home\AppBar\Search.png" />
     <Content Include="Images\Home\PostControl\Selected\comment.png" />
     <Content Include="Images\Home\PostControl\Selected\like.png" />
     <Content Include="Images\Home\PostControl\Selected\repost.png" />
@@ -211,6 +220,8 @@
     <Content Include="Images\Home\PostControl\Unselected\like.png" />
     <Content Include="Images\Home\PostControl\Unselected\repost.png" />
     <Content Include="Images\Home\user-pfp.png" />
+    <Content Include="Images\Post\image.png" />
+    <Content Include="Images\Post\post.png" />
     <Content Include="Images\Setup\back.png" />
     <Content Include="Images\Setup\next.png" />
     <Content Include="Images\Setup\wp-bluesky.png" />
@@ -248,9 +259,7 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\Home\AppBar\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -30,7 +30,7 @@ namespace CobaltSky
             if (SettingsMgr.FinishedWelcome)
             {
                 // Lets refresh the token while we are at it...
-                var api = new CobaltSky.Classes.API();
+                var api = new API();
                 var headers = new Dictionary<string, string>
                 {
                     { "Accept", "*/*" },

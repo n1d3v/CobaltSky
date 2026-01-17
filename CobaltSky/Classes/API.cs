@@ -1,11 +1,10 @@
-﻿using System.Runtime.Serialization.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
-using System.IO;
 using System;
+using Newtonsoft.Json;
 
 namespace CobaltSky.Classes
 {
@@ -58,12 +57,7 @@ namespace CobaltSky.Classes
 
         private string SerializeToJson(object obj)
         {
-            using (var ms = new MemoryStream())
-            {
-                var serializer = new DataContractJsonSerializer(obj.GetType());
-                serializer.WriteObject(ms, obj);
-                return Encoding.UTF8.GetString(ms.ToArray(), 0, (int)ms.Length);
-            }
+            return JsonConvert.SerializeObject(obj);
         }
     }
 }
