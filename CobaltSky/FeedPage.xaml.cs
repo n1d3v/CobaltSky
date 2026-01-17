@@ -87,20 +87,17 @@ namespace CobaltSky
             await api.SendAPI("/app.bsky.actor.getPreferences", "GET", null, res =>
             {
                 Debug.WriteLine($"Response from Bluesky's server (getPreferences): {res}");
-
                 try
                 {
                     var root = JsonConvert.DeserializeObject<PreferencesRoot>(res);
 
-                    var feed = root.Preferences?
-                        .FirstOrDefault(p => p.Type == "app.bsky.actor.defs#savedFeedsPrefV2")?
-                        .Items?
+                    var feed = root.Preferences
+                        .Where(p => p.Items != null)
+                        .SelectMany(p => p.Items)
                         .FirstOrDefault(i => i.Type == "feed");
 
-                    if (feed != null)
-                    {
-                        SettingsMgr.BskyDidPref = feed.Value;
-                    }
+                    SettingsMgr.BskyDidPref = feed.Value;
+                    Debug.WriteLine($"BskyDidPref set to: {SettingsMgr.BskyDidPref}");
                 }
                 catch (Exception ex)
                 {

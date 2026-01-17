@@ -97,6 +97,23 @@ namespace CobaltSky
             if (selectedFeed == "Topics")
             {
                 Debug.WriteLine($"The value of BskyDidPref is {SettingsMgr.BskyDidPref}");
+                if (SettingsMgr.BskyDidPref == null)
+                {
+                    MessageBox.Show("The value of your Bluesky ID is invalid, you will need to redo the setup once more. Sorry about that!", "uhh... something is not right", MessageBoxButton.OK);
+
+                    // This is sort of a mess, I'll try to figure out something better in the future.
+                    SettingsMgr.BskyDid = null;
+                    SettingsMgr.BskyDidPref = null;
+                    SettingsMgr.BskyHandle = null;
+                    SettingsMgr.AccessJwt = null;
+                    SettingsMgr.RefreshJwt = null;
+                    SettingsMgr.FeedSelection = null;
+                    SettingsMgr.SelectedTopics = null;
+                    SettingsMgr.FinishedWelcome = false;
+
+                    Application.Current.Terminate();
+                    return;
+                }
                 encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
                 urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=30";
             }
