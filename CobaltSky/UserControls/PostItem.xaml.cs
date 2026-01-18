@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Text.RegularExpressions;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace CobaltSky.UserControls
 {
@@ -52,12 +55,13 @@ namespace CobaltSky.UserControls
             get { return (string)GetValue(PostTextProperty); }
             set { SetValue(PostTextProperty, value); }
         }
+
         public static readonly DependencyProperty PostTextProperty =
             DependencyProperty.Register(
                 nameof(PostText),
                 typeof(string),
                 typeof(PostItem),
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(string.Empty, OnPostTextChanged));
 
         public string PostImage
         {
@@ -140,6 +144,36 @@ namespace CobaltSky.UserControls
             {
                 CobaltSky.Classes.GlobalHelper.SetImageFromUrl(control.PostImageCont, imageUrl);
             }
+        }
+
+        private static void OnPostTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as PostItem;
+            if (control == null) return;
+
+            string newText = e.NewValue as string ?? string.Empty;
+            control.PostTextBlock.Inlines.Clear();
+
+            var regex = new Regex(@"(@\w+|#\w+|https?://\S+|www\.\S+|\b[\w-]+\.\w{2,}(/\S*)?\b)");
+            int lastIndex = 0;
+
+            foreach (Match m in regex.Matches(newText))
+            {
+                if (m.Index > lastIndex)
+                    control.PostTextBlock.Inlines.Add(new Run { Text = newText.Substring(lastIndex, m.Index - lastIndex) });
+
+                control.PostTextBlock.Inlines.Add(new Run
+                {
+                    Text = m.Value,
+                    Foreground = new SolidColorBrush((Color)Application.Current.Resources["PhoneAccentColor"]),
+                    TextDecorations = TextDecorations.Underline
+                });
+
+                lastIndex = m.Index + m.Length;
+            }
+
+            if (lastIndex < newText.Length)
+                control.PostTextBlock.Inlines.Add(new Run { Text = newText.Substring(lastIndex) });
         }
     }
 }

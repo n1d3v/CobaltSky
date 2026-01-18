@@ -49,7 +49,7 @@
                 <ListBox x:Name="HomePostList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <uc:PostItem />
+                            <uc:PostItem PostText="{Binding record.text}" />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

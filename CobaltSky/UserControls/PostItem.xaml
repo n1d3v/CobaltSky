@@ -31,7 +31,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="PostTextBlock" Grid.Row="0" Text="{Binding record.text}" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
+                <TextBlock x:Name="PostTextBlock" Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
                 <Image x:Name="PostImageCont" Grid.Row="1" Source="{Binding embed.images[0].thumb}" Margin="0,5,0,0" />
                 <MediaElement x:Name="PostVideoCont" Grid.Row="2" Source="{Binding PostVideo}" />
 
