@@ -18,7 +18,8 @@ This is the current list of features that are implemented, this may change in th
          - [x] Images
          - [ ] Videos
          - [ ] Link embeds
-      - [ ] Rich text (Links, mentions, hashtags) 
+      - [ ] Rich text (Links, mentions, hashtags)
+      - [ ] Pagination / Infinite scrolling
    - [x] Uploading posts (Text only)
       - Other forms of uploading posts are not complete.
    - [x] Search features
