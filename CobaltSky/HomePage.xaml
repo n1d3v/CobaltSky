@@ -38,7 +38,7 @@
     <StackPanel>
         <!-- Why have a boring Pivot title when you can spend your time making -->
         <!-- a logo just for it to look horrible multiple times then you have to repeat that process of resizing the logo? -->
-        <Image Source="Images\CobaltSkyWM.png" Width="150" HorizontalAlignment="Left" Margin="25,30,25,-17" />
+        <Image x:Name="CobaltWM" Source="Images\CobaltSkyWM.png" Width="150" HorizontalAlignment="Left" Margin="25,30,25,-17" Tap="CobaltWM_Tap" />
         <phone:Pivot>
             <phone:PivotItem Header="home">
 

@@ -56,6 +56,12 @@ namespace CobaltSky.Classes
             set { SetString("bskyHandle", value); }
         }
 
+        public static string BskyAvatar
+        {
+            get { return GetString("bskyAvatar"); }
+            set { SetString("bskyAvatar", value); }
+        }
+
         public static string BskyDidPref
         {
             get { return GetString("bskyDidPref"); }

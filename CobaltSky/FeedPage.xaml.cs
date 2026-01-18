@@ -63,6 +63,7 @@ namespace CobaltSky
 
                     _displayName = result.DisplayName;
                     SettingsMgr.BskyHandle = result.Handle;
+                    SettingsMgr.BskyAvatar = result.Avatar;
 
                     ChangeCustomizeDesc();
                 }
@@ -145,6 +146,9 @@ namespace CobaltSky
 
             [JsonProperty("handle")]
             public string Handle { get; set; }
+
+            [JsonProperty("avatar")]
+            public string Avatar { get; set; }
         }
 
         class PreferencesRoot

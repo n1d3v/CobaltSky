@@ -15,6 +15,7 @@ namespace CobaltSky
         public PostPage()
         {
             InitializeComponent();
+            GlobalHelper.SetImageFromUrl(ProfilePic, SettingsMgr.BskyAvatar);
         }
 
         private async void PostButton_Click(object sender, EventArgs e)

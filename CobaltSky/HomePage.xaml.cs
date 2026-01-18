@@ -102,6 +102,7 @@ namespace CobaltSky
                     SettingsMgr.BskyDid = null;
                     SettingsMgr.BskyDidPref = null;
                     SettingsMgr.BskyHandle = null;
+                    SettingsMgr.BskyAvatar = null;
                     SettingsMgr.AccessJwt = null;
                     SettingsMgr.RefreshJwt = null;
                     SettingsMgr.FeedSelection = null;
@@ -152,6 +153,29 @@ namespace CobaltSky
         private void SearchButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/SearchPage.xaml", UriKind.Relative));
+        }
+
+        private void CobaltWM_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "Do you want to clear all of your user data and log out of the app?",
+                "dangerous action!",
+                MessageBoxButton.OKCancel);
+
+            if (result != MessageBoxResult.OK)
+                return;
+
+            SettingsMgr.BskyDid = null;
+            SettingsMgr.BskyDidPref = null;
+            SettingsMgr.BskyHandle = null;
+            SettingsMgr.BskyAvatar = null;
+            SettingsMgr.AccessJwt = null;
+            SettingsMgr.RefreshJwt = null;
+            SettingsMgr.FeedSelection = null;
+            SettingsMgr.SelectedTopics = null;
+            SettingsMgr.FinishedWelcome = false;
+
+            Application.Current.Terminate();
         }
     }
 }
