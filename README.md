@@ -17,6 +17,7 @@ This is the current list of features that are implemented, this may change in th
       - [ ] Embeds in the post
          - [x] Images
          - [ ] Videos
+            - This will be a hard task since Bluesky uses the .m3u8 format, which is not officially supported on Windows Phone, if anyone could get it working before me, please submit a pull request with your code included!
          - [ ] Link embeds
       - [x] Rich text (Links, mentions, hashtags)
          - This does not function when you click them just yet.
