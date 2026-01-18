@@ -12,8 +12,14 @@ This is the current list of features that are implemented, this may change in th
    - [x] Signing into a Bluesky account
    - [x] Setting up feed settings
 - Client
-   - [ ] Loading posts
-      - The backend for this is complete, visual is not.
+   - [x] Loading posts
+      - [x] Text in the post
+      - [ ] Embeds in the post
+         - [x] Images
+         - [ ] Videos
+         - [ ] Link embeds
+      - [ ] Rich text (Links, mentions, hashtags)
+      - [ ] Pagination / Infinite scrolling
    - [x] Uploading posts (Text only)
       - Other forms of uploading posts are not complete.
    - [x] Search features
@@ -21,6 +27,7 @@ This is the current list of features that are implemented, this may change in th
       - [x] Showing trending topics
          - [ ] Showing posts for trending topics
    - [ ] Notifications
+      - [ ] Push notifications
    - [ ] Direct messaging
    - [ ] Account viewing
    - [ ] Feed support
