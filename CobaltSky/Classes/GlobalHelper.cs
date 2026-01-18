@@ -44,5 +44,27 @@ namespace CobaltSky.Classes
                 imageControl.Source = defaultBitmap;
             }
         }
+
+        public static string GetRelativeTime(string utcTimeString)
+        {
+            DateTime time;
+            if (!DateTime.TryParse(utcTimeString, null, System.Globalization.DateTimeStyles.AdjustToUniversal, out time))
+                return utcTimeString;
+
+            var span = DateTime.UtcNow - time;
+
+            if (span.TotalSeconds < 60)
+                return $"{(int)span.TotalSeconds} second{(span.TotalSeconds >= 2 ? "s" : "")} ago";
+            if (span.TotalMinutes < 60)
+                return $"{(int)span.TotalMinutes} minute{(span.TotalMinutes >= 2 ? "s" : "")} ago";
+            if (span.TotalHours < 24)
+                return $"{(int)span.TotalHours} hour{(span.TotalHours >= 2 ? "s" : "")} ago";
+            if (span.TotalDays < 30)
+                return $"{(int)span.TotalDays} day{(span.TotalDays >= 2 ? "s" : "")} ago";
+            if (span.TotalDays < 365)
+                return $"{(int)(span.TotalDays / 30)} month{(span.TotalDays / 30 >= 2 ? "s" : "")} ago";
+
+            return $"{(int)(span.TotalDays / 365)} year{(span.TotalDays / 365 >= 2 ? "s" : "")} ago";
+        }
     }
 }

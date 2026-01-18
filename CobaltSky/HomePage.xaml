@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:uc="clr-namespace:CobaltSky.UserControls;assembly=CobaltSky"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -35,13 +36,23 @@
         </toolkit:NavigationOutTransition>
     </toolkit:TransitionService.NavigationOutTransition>
 
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <!-- Why have a boring Pivot title when you can spend your time making -->
         <!-- a logo just for it to look horrible multiple times then you have to repeat that process of resizing the logo? -->
-        <Image x:Name="CobaltWM" Source="Images\CobaltSkyWM.png" Width="150" HorizontalAlignment="Left" Margin="25,30,25,-17" Tap="CobaltWM_Tap" />
-        <phone:Pivot>
+        <Image x:Name="CobaltWM" Source="Images\CobaltSkyWM.png" Width="150" HorizontalAlignment="Left" Margin="25,30,25,-17" Tap="CobaltWM_Tap" Grid.Row="0" />
+        <phone:Pivot Grid.Row="1">
             <phone:PivotItem Header="home">
-
+                <ListBox x:Name="HomePostList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <uc:PostItem />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </phone:PivotItem>
             <phone:PivotItem x:Name="ModifiablePage" Header="topics">
 
@@ -50,7 +61,7 @@
 
             </phone:PivotItem>
         </phone:Pivot>
-    </StackPanel>
+    </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar>
             <shell:ApplicationBarIconButton x:Name="PostButton" IconUri="Images\Home\AppBar\add.png" Text="add a post" Click="PostButton_Click" />

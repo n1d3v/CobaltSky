@@ -29,6 +29,27 @@ namespace CobaltSky
         private async void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             LoadStringsAndValues();
+
+            // Extremely rare case if this happens, but it's worth it to put it here.
+            if (SettingsMgr.BskyDidPref == null)
+            {
+                MessageBox.Show("The value of your Bluesky ID is invalid, you will need to redo the setup once more. Sorry about that!", "uhh... something is not right", MessageBoxButton.OK);
+
+                // This is sort of a mess, I'll try to figure out something better in the future.
+                SettingsMgr.BskyDid = null;
+                SettingsMgr.BskyDidPref = null;
+                SettingsMgr.BskyHandle = null;
+                SettingsMgr.BskyAvatar = null;
+                SettingsMgr.AccessJwt = null;
+                SettingsMgr.RefreshJwt = null;
+                SettingsMgr.FeedSelection = null;
+                SettingsMgr.SelectedTopics = null;
+                SettingsMgr.FinishedWelcome = false;
+
+                Application.Current.Terminate();
+                return;
+            }
+
             // Kinda messy but alright, gotta do what you gotta do.
             await RefreshJWT();
             await Task.Factory.StartNew(() => RefreshJWTTimer(5));
@@ -93,32 +114,30 @@ namespace CobaltSky
             }
             if (selectedFeed == "Topics")
             {
-                // Extremely rare case if this happens, but it's worth it to put it here.
-                if (SettingsMgr.BskyDidPref == null)
-                {
-                    MessageBox.Show("The value of your Bluesky ID is invalid, you will need to redo the setup once more. Sorry about that!", "uhh... something is not right", MessageBoxButton.OK);
-
-                    // This is sort of a mess, I'll try to figure out something better in the future.
-                    SettingsMgr.BskyDid = null;
-                    SettingsMgr.BskyDidPref = null;
-                    SettingsMgr.BskyHandle = null;
-                    SettingsMgr.BskyAvatar = null;
-                    SettingsMgr.AccessJwt = null;
-                    SettingsMgr.RefreshJwt = null;
-                    SettingsMgr.FeedSelection = null;
-                    SettingsMgr.SelectedTopics = null;
-                    SettingsMgr.FinishedWelcome = false;
-
-                    Application.Current.Terminate();
-                    return;
-                }
                 encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
-                urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=30";
+                urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=5";
             }
 
             await api.SendAPI(urlNeeded, "GET", null, (response) =>
             {
-                Debug.WriteLine($"Response from Bluesky's servers (urlNeeded): {response}");
+                var feedResponse = JsonConvert.DeserializeObject<FeedResponse>(response);
+                if (feedResponse?.feed == null || feedResponse.feed.Count == 0)
+                {
+                    HomePostList.ItemsSource = null;
+                    return;
+                }
+
+                var posts = new List<Post>();
+                foreach (var item in feedResponse.feed)
+                {
+                    var post = item.post;
+                    if (post != null)
+                    {
+                        post.record.createdAt = GlobalHelper.GetRelativeTime(post.record.createdAt);
+                        posts.Add(post);
+                    }
+                }
+                HomePostList.ItemsSource = posts;   
             }, headers);
         }
 
@@ -176,6 +195,69 @@ namespace CobaltSky
             SettingsMgr.FinishedWelcome = false;
 
             Application.Current.Terminate();
+        }
+
+        // JSON for post handling
+        public class FeedResponse
+        {
+            public List<FeedItem> feed { get; set; }
+        }
+
+        public class FeedItem
+        {
+            public Post post { get; set; }
+        }
+
+        public class Post
+        {
+            public string uri { get; set; }
+            public Author author { get; set; }
+            public Record record { get; set; }
+            public Embed embed { get; set; }
+
+            public int replyCount { get; set; }
+            public int repostCount { get; set; }
+            public int likeCount { get; set; }
+            public string indexedAt { get; set; }
+        }
+
+        public class Author
+        {
+            public string did { get; set; }
+            public string handle { get; set; }
+            public string displayName { get; set; }
+            public string avatar { get; set; }
+        }
+
+        public class Record
+        {
+            [JsonProperty("$type")]
+            public string Type { get; set; }
+
+            public string createdAt { get; set; }
+            public string text { get; set; }
+        }
+
+        public class Embed
+        {
+            [JsonProperty("$type")]
+            public string Type { get; set; }
+
+            public List<EmbedImage> images { get; set; }
+        }
+
+        public class EmbedImage
+        {
+            public string thumb { get; set; }
+            public string fullsize { get; set; }
+            public string alt { get; set; }
+            public AspectRatio aspectRatio { get; set; }
+        }
+
+        public class AspectRatio
+        {
+            public int height { get; set; }
+            public int width { get; set; }
         }
     }
 }
