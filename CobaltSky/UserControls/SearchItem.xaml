@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="CobaltSky.UserControls.SearchItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="Root"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    d:DesignWidth="480"
+    Width="Auto" HorizontalAlignment="Stretch">
+
+    <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneBackgroundBrush}" HorizontalAlignment="Stretch">
+        <StackPanel Orientation="Horizontal" Margin="0,12">
+            <Image x:Name="AvatarImage" Width="60" Margin="0,0,12,0" />
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock FontSize="24" Text="{Binding displayName}" />
+                <TextBlock Text="{Binding handle}" Opacity="0.5" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

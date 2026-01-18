@@ -22,7 +22,6 @@ namespace CobaltSky
         private void NextButton_Click(object sender, EventArgs e)
         {
             SettingsMgr.FinishedWelcome = true;
-            Debug.WriteLine($"Written value of FinishedWelcome, just to confirm here's the value: {SettingsMgr.FinishedWelcome.ToString()}");
             NavigationService.Navigate(new Uri("/HomePage.xaml", UriKind.Relative));
         }
 

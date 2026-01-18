@@ -63,9 +63,6 @@ namespace CobaltSky
 
             await api.SendAPI("/com.atproto.server.refreshSession", "POST", null, (response) =>
             {
-                Debug.WriteLine("Refreshing the Bluesky token!");
-                Debug.WriteLine($"Response from Bluesky's servers: {response}");
-
                 var result = JsonConvert.DeserializeObject<LoginRoot>(response);
 
                 SettingsMgr.AccessJwt = result.bskyJwt;
@@ -96,7 +93,7 @@ namespace CobaltSky
             }
             if (selectedFeed == "Topics")
             {
-                Debug.WriteLine($"The value of BskyDidPref is {SettingsMgr.BskyDidPref}");
+                // Extremely rare case if this happens, but it's worth it to put it here.
                 if (SettingsMgr.BskyDidPref == null)
                 {
                     MessageBox.Show("The value of your Bluesky ID is invalid, you will need to redo the setup once more. Sorry about that!", "uhh... something is not right", MessageBoxButton.OK);
@@ -117,8 +114,6 @@ namespace CobaltSky
                 encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
                 urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=30";
             }
-
-            Debug.WriteLine($"Generated endpoint: {urlNeeded}");
 
             await api.SendAPI(urlNeeded, "GET", null, (response) =>
             {
@@ -152,6 +147,11 @@ namespace CobaltSky
         private void PostButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/PostPage.xaml", UriKind.Relative));
+        }
+
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/SearchPage.xaml", UriKind.Relative));
         }
     }
 }

@@ -25,7 +25,6 @@ namespace CobaltSky
         {
             // This delay is to make the transition not look ugly, my bad if it makes the experience annoying.
             await Task.Delay(1000);
-            Debug.WriteLine($"FinishedWelcome's state is {SettingsMgr.FinishedWelcome}");
 
             if (SettingsMgr.FinishedWelcome)
             {
@@ -41,20 +40,12 @@ namespace CobaltSky
 
                 await api.SendAPI("/com.atproto.server.refreshSession", "POST", null, (response) =>
                 {
-                    Debug.WriteLine("Refreshing the Bluesky token!");
-                    Debug.WriteLine($"Response from Bluesky's servers: {response}");
-
                     var result = JsonConvert.DeserializeObject<LoginRoot>(response);
 
                     // Save the JWT and DID to settings
                     SettingsMgr.AccessJwt = result.bskyJwt;
                     SettingsMgr.RefreshJwt = result.bskyRefJwt;
                     SettingsMgr.BskyDid = result.bskyDid;
-
-                    // Show the values to confirm
-                    Debug.WriteLine($"Saved accessJwt to settings: {result.bskyJwt}");
-                    Debug.WriteLine($"Saved refreshJwt to settings: {result.bskyRefJwt}");
-                    Debug.WriteLine($"Saved bskyDid to settings: {result.bskyDid}");
                 }, headers);
 
                 NavigationService.Navigate(new Uri("/HomePage.xaml", UriKind.Relative));

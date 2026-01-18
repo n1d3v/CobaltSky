@@ -97,6 +97,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\API.cs" />
+    <Compile Include="Classes\GlobalHelper.cs" />
     <Compile Include="Classes\SettingsMgr.cs" />
     <Compile Include="FeedPage.xaml.cs">
       <DependentUpon>FeedPage.xaml</DependentUpon>
@@ -114,11 +115,20 @@
     <Compile Include="PostPage.xaml.cs">
       <DependentUpon>PostPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StallPage.xaml.cs">
       <DependentUpon>StallPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\PostItem.xaml.cs">
       <DependentUpon>PostItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\SearchItem.xaml.cs">
+      <DependentUpon>SearchItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TrendItem.xaml.cs">
+      <DependentUpon>TrendItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="WelcomePage.xaml.cs">
       <DependentUpon>WelcomePage.xaml</DependentUpon>
@@ -155,11 +165,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="StallPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\PostItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\SearchItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TrendItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
