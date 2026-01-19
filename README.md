@@ -23,6 +23,7 @@ This is the current list of features that are implemented, this may change in th
          - This does not support simple links like example.com, the regex does not support this as it would interfere with other stuff, will fix this later.
          - This does not function when you click them just yet.
       - [ ] Pagination / Infinite scrolling
+   - [ ] Liking, reposting and commenting on posts
    - [x] Uploading posts (Text only)
       - Other forms of uploading posts are not complete.
    - [x] Search features
