@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
 
 namespace CobaltSky.UserControls
 {
@@ -22,7 +15,6 @@ namespace CobaltSky.UserControls
             get { return (string)GetValue(UserNameProperty); }
             set { SetValue(UserNameProperty, value); }
         }
-
         public static readonly DependencyProperty UserNameProperty =
             DependencyProperty.Register(
                 "UserName",
@@ -35,7 +27,6 @@ namespace CobaltSky.UserControls
             get { return (string)GetValue(UserHandleProperty); }
             set { SetValue(UserHandleProperty, value); }
         }
-
         public static readonly DependencyProperty UserHandleProperty =
             DependencyProperty.Register(
                 "UserHandle",
@@ -48,7 +39,6 @@ namespace CobaltSky.UserControls
             get { return (string)GetValue(UserAvatarProperty); }
             set { SetValue(UserAvatarProperty, value); }
         }
-
         public static readonly DependencyProperty UserAvatarProperty =
             DependencyProperty.Register(
                 "UserAvatar",

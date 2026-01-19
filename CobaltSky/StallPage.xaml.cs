@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Collections.Generic;
 using System.Windows.Navigation;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Phone.Controls;
 using CobaltSky.Classes;

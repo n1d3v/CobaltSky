@@ -15,7 +15,6 @@ namespace CobaltSky.UserControls
             get { return (string)GetValue(TrendNameProperty); }
             set { SetValue(TrendNameProperty, value); }
         }
-
         public static readonly DependencyProperty TrendNameProperty =
             DependencyProperty.Register(
                 "TrendName",

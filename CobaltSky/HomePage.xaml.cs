@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using CobaltSky.Classes;
 using Microsoft.Phone.Controls;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -35,16 +33,7 @@ namespace CobaltSky
             {
                 MessageBox.Show("The value of your Bluesky ID is invalid, you will need to redo the setup once more. Sorry about that!", "uhh... something is not right", MessageBoxButton.OK);
 
-                // This is sort of a mess, I'll try to figure out something better in the future.
-                SettingsMgr.BskyDid = null;
-                SettingsMgr.BskyDidPref = null;
-                SettingsMgr.BskyHandle = null;
-                SettingsMgr.BskyAvatar = null;
-                SettingsMgr.AccessJwt = null;
-                SettingsMgr.RefreshJwt = null;
-                SettingsMgr.FeedSelection = null;
-                SettingsMgr.SelectedTopics = null;
-                SettingsMgr.FinishedWelcome = false;
+                ClearUserData();
 
                 Application.Current.Terminate();
                 return;
@@ -115,18 +104,12 @@ namespace CobaltSky
             if (selectedFeed == "Topics")
             {
                 encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
-                urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=5";
+                urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=15";
             }
 
             await api.SendAPI(urlNeeded, "GET", null, (response) =>
             {
                 var feedResponse = JsonConvert.DeserializeObject<FeedResponse>(response);
-                if (feedResponse?.feed == null || feedResponse.feed.Count == 0)
-                {
-                    HomePostList.ItemsSource = null;
-                    return;
-                }
-
                 var posts = new List<Post>();
                 foreach (var item in feedResponse.feed)
                 {
@@ -184,6 +167,13 @@ namespace CobaltSky
             if (result != MessageBoxResult.OK)
                 return;
 
+            ClearUserData();
+
+            Application.Current.Terminate();
+        }
+
+        private void ClearUserData()
+        {
             SettingsMgr.BskyDid = null;
             SettingsMgr.BskyDidPref = null;
             SettingsMgr.BskyHandle = null;
@@ -193,8 +183,6 @@ namespace CobaltSky
             SettingsMgr.FeedSelection = null;
             SettingsMgr.SelectedTopics = null;
             SettingsMgr.FinishedWelcome = false;
-
-            Application.Current.Terminate();
         }
 
         // JSON for post handling
@@ -214,6 +202,16 @@ namespace CobaltSky
             public Author author { get; set; }
             public Record record { get; set; }
             public Embed embed { get; set; }
+
+            public Visibility PostTextVisibility
+            {
+                get { return record != null && record?.text != null ? Visibility.Visible : Visibility.Collapsed; }
+            }
+
+            public Visibility EmbedVisibility
+            {
+                get { return embed != null && embed.external != null ? Visibility.Visible : Visibility.Collapsed; }
+            }
 
             public int replyCount { get; set; }
             public int repostCount { get; set; }
@@ -243,7 +241,16 @@ namespace CobaltSky
             [JsonProperty("$type")]
             public string Type { get; set; }
 
+            public EmbedExternal external { get; set; }
             public List<EmbedImage> images { get; set; }
+        }
+
+        public class EmbedExternal
+        {
+            public string uri { get; set; }
+            public string title { get; set; }
+            public string description { get; set; }
+            public string thumb { get; set; }
         }
 
         public class EmbedImage

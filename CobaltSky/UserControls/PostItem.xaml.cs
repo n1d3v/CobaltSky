@@ -14,6 +14,7 @@ namespace CobaltSky.UserControls
             InitializeComponent();
         }
 
+        // Post options
         public string AuthorPicURL
         {
             get { return (string)GetValue(AuthorPicURLProperty); }
@@ -55,7 +56,6 @@ namespace CobaltSky.UserControls
             get { return (string)GetValue(PostTextProperty); }
             set { SetValue(PostTextProperty, value); }
         }
-
         public static readonly DependencyProperty PostTextProperty =
             DependencyProperty.Register(
                 nameof(PostText),
@@ -80,7 +80,6 @@ namespace CobaltSky.UserControls
             get { return (Uri)GetValue(PostVideoProperty); }
             set { SetValue(PostVideoProperty, value); }
         }
-
         public static readonly DependencyProperty PostVideoProperty =
             DependencyProperty.Register(
                 nameof(PostVideo),
@@ -124,17 +123,7 @@ namespace CobaltSky.UserControls
                 typeof(PostItem),
                 new PropertyMetadata("0"));
 
-        private static void OnUserAvatarChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (PostItem)d;
-            var imageUrl = e.NewValue as string;
-
-            if (!string.IsNullOrWhiteSpace(imageUrl))
-            {
-                CobaltSky.Classes.GlobalHelper.SetImageFromUrl(control.AuthorPicture, imageUrl);
-            }
-        }
-
+        // Helper functions
         private static void OnPostPicChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (PostItem)d;
@@ -154,7 +143,12 @@ namespace CobaltSky.UserControls
             string newText = e.NewValue as string ?? string.Empty;
             control.PostTextBlock.Inlines.Clear();
 
-            var regex = new Regex(@"(@\w+|#\w+|https?://\S+|www\.\S+|\b[\w-]+\.\w{2,}(/\S*)?\b)");
+            // example.com will not work for now, need to figure out a safe way to find these simple domain names.
+            var regex = new Regex(
+                @"(@[a-zA-Z0-9._-]+|" +
+                @"https?://[^\s]+|" +
+                @"www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}[^\s]*)",
+                RegexOptions.IgnoreCase);
             int lastIndex = 0;
 
             foreach (Match m in regex.Matches(newText))

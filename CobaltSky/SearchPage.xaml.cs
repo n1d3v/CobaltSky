@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Phone.Controls;
 using CobaltSky.Classes;
-using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Windows.Threading;
 using System;
@@ -39,7 +38,9 @@ namespace CobaltSky
                 { "Authorization", $"Bearer {token}" }
             };
 
-            await api.SendAPI("/app.bsky.unspecced.getTrends?limit=6", "GET", null, (response =>
+            // This is an undocumented API endpoint used to find the current trends for the user.
+            // I found this using the 'Network' tab in Firefox.
+            await api.SendAPI("/app.bsky.unspecced.getTrends?limit=5", "GET", null, (response =>
             {
                 var data = JsonConvert.DeserializeObject<TrendsResponse>(response);
 

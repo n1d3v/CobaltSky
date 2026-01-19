@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Windows.Controls;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
 namespace CobaltSky.Classes
@@ -65,6 +68,19 @@ namespace CobaltSky.Classes
                 return $"{(int)(span.TotalDays / 30)} month{(span.TotalDays / 30 >= 2 ? "s" : "")} ago";
 
             return $"{(int)(span.TotalDays / 365)} year{(span.TotalDays / 365 >= 2 ? "s" : "")} ago";
+        }
+
+        public class BoolToVisConv : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return (bool)value ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

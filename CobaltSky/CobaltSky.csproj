@@ -121,6 +121,9 @@
     <Compile Include="StallPage.xaml.cs">
       <DependentUpon>StallPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\PostEmbed.xaml.cs">
+      <DependentUpon>PostEmbed.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\PostItem.xaml.cs">
       <DependentUpon>PostItem.xaml</DependentUpon>
     </Compile>
@@ -170,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="StallPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\PostEmbed.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
