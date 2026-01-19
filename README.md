@@ -14,7 +14,7 @@ This is the current list of features that are implemented, this may change in th
 - Client
    - [x] Loading posts
       - [x] Text in the post
-      - [ ] Embeds in the post
+      - [x] Embeds in the post
          - [x] Images
          - [ ] Videos
             - This will be a hard task since Bluesky uses the .m3u8 format, which is not officially supported on Windows Phone, if anyone could get it working before me, please submit a pull request with your code included!
@@ -27,6 +27,7 @@ This is the current list of features that are implemented, this may change in th
       - Other forms of uploading posts are not complete.
    - [x] Search features
       - [x] Searching for users
+      - [ ] Searching for posts
       - [x] Showing trending topics
          - [ ] Showing posts for trending topics
    - [ ] Notifications
