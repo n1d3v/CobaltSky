@@ -41,7 +41,7 @@ namespace CobaltSky.Classes
                 };
                 webClient.OpenReadAsync(new Uri(imageUrl, UriKind.Absolute));
             }
-            catch (Exception ex)
+            finally
             {
                 var defaultBitmap = new BitmapImage(new Uri("/Images/Home/user-pfp.png", UriKind.Relative));
                 imageControl.Source = defaultBitmap;

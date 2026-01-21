@@ -127,6 +127,9 @@
     <Compile Include="UserControls\PostItem.xaml.cs">
       <DependentUpon>PostItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ReplyItem.xaml.cs">
+      <DependentUpon>ReplyItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\SearchItem.xaml.cs">
       <DependentUpon>SearchItem.xaml</DependentUpon>
     </Compile>
@@ -181,6 +184,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\PostItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ReplyItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -46,7 +46,7 @@
         <Image x:Name="CobaltWM" Source="Images\CobaltSkyWM.png" Width="150" HorizontalAlignment="Left" Margin="25,30,25,-17" Tap="CobaltWM_Tap" Grid.Row="0" />
         <phone:Pivot Grid.Row="1">
             <phone:PivotItem Header="home">
-                <ListBox x:Name="HomePostList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ListBox x:Name="HomePostList" Loaded="HomePostList_Loaded" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Hidden">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <uc:PostItem PostText="{Binding record.text}" />

@@ -4,6 +4,10 @@ using System.Windows;
 using CobaltSky.Classes;
 using Microsoft.Phone.Controls;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
+using System.Windows.Media;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace CobaltSky
@@ -18,10 +22,20 @@ namespace CobaltSky
         private string userTopics = SettingsMgr.SelectedTopics.ToLower().Replace(" ", ""); // Make it compatible with how Bluesky does it
         private bool _refreshRunning = false; // Needed for the refresh
 
+        // Needed for pagination
+        private ScrollViewer _scrollViewer;
+        private const int MinItemsBeforeScroll = 5; // 5 is needed because if you scroll too fast it will not loading anything further.
+        private ObservableCollection<Post> _posts = new ObservableCollection<Post>();
+        private string BskyCursor; // This is needed to prevent posts that were already seen from loading.
+
+        // Prevents spamming the Bluesky API
+        private bool _isLoading;
+
         public HomePage()
         {
             InitializeComponent();
             Loaded += HomePage_Loaded;
+            HomePostList.ItemsSource = _posts;
         }
 
         private async void HomePage_Loaded(object sender, RoutedEventArgs e)
@@ -83,45 +97,65 @@ namespace CobaltSky
 
         private async Task LoadPosts()
         {
-            var api = new CobaltSky.Classes.API();
-            var headers = new Dictionary<string, string>
-            {
-                { "Accept", "*/*" },
-                { "Accept-Language", "en" },
-                { "atproto-accept-labelers", did },
-                { "authorization", $"Bearer {token}" },
-                { "x-bsky-topics", userTopics }
-            };
+            if (_isLoading)
+                return;
 
-            // Here is where we generate a URL for what we are gonna get
-            string urlNeeded = null;
-            string encFeed = null;
+            // To prevent spamming the API once you've reached the bottom of the list
+            _isLoading = true;
 
-            if (selectedFeed == "Following")
+            try
             {
-                urlNeeded = "/app.bsky.feed.getTimeline";
-            }
-            if (selectedFeed == "Topics")
-            {
-                encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
-                urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=15";
-            }
-
-            await api.SendAPI(urlNeeded, "GET", null, (response) =>
-            {
-                var feedResponse = JsonConvert.DeserializeObject<FeedResponse>(response);
-                var posts = new List<Post>();
-                foreach (var item in feedResponse.feed)
+                var api = new CobaltSky.Classes.API();
+                var headers = new Dictionary<string, string>
                 {
-                    var post = item.post;
-                    if (post != null)
+                    { "Accept", "*/*" },
+                    { "Accept-Language", "en" },
+                    { "atproto-accept-labelers", did },
+                    { "authorization", $"Bearer {token}" },
+                    { "x-bsky-topics", userTopics }
+                };
+
+                string urlNeeded = null;
+                string encFeed = null;
+
+                if (selectedFeed == "Following")
+                {
+                    urlNeeded = "/app.bsky.feed.getTimeline";
+                }
+                else if (selectedFeed == "Topics")
+                {
+                    encFeed = Uri.EscapeDataString(SettingsMgr.BskyDidPref);
+                    urlNeeded = $"/app.bsky.feed.getFeed?feed={encFeed}&limit=15";
+
+                    // Needed for pagination
+                    if (!string.IsNullOrEmpty(BskyCursor))
                     {
-                        post.record.createdAt = GlobalHelper.GetRelativeTime(post.record.createdAt);
-                        posts.Add(post);
+                        urlNeeded += $"&cursor={Uri.EscapeDataString(BskyCursor)}";
                     }
                 }
-                HomePostList.ItemsSource = posts;   
-            }, headers);
+
+                await api.SendAPI(urlNeeded, "GET", null, (response) =>
+                {
+                    var feedResponse = JsonConvert.DeserializeObject<FeedResponse>(response);
+                    BskyCursor = feedResponse.cursor;
+
+                    foreach (var item in feedResponse.feed)
+                    {
+                        var post = item.post;
+                        if (post != null)
+                        {
+                            post.record.createdAt =
+                                GlobalHelper.GetRelativeTime(post.record.createdAt);
+
+                            _posts.Add(post);
+                        }
+                    }
+                }, headers);
+            }
+            finally
+            {
+                _isLoading = false;
+            }
         }
 
         private void LoadStringsAndValues()
@@ -137,16 +171,7 @@ namespace CobaltSky
                 ModifiablePage.Visibility = Visibility.Collapsed;
         }
 
-        public class LoginRoot
-        {
-            [JsonProperty("did")]
-            public string bskyDid { get; set; }
-            [JsonProperty("accessJwt")]
-            public string bskyJwt { get; set; }
-            [JsonProperty("refreshJwt")]
-            public string bskyRefJwt { get; set; }
-        }
-
+        // Navigation functions
         private void PostButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/PostPage.xaml", UriKind.Relative));
@@ -172,6 +197,59 @@ namespace CobaltSky
             Application.Current.Terminate();
         }
 
+        // Helper methods
+        public static ScrollViewer GetScrollViewer(DependencyObject root)
+        {
+            if (root is ScrollViewer)
+                return (ScrollViewer)root;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                var result = GetScrollViewer(child);
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
+
+        private void HomePostList_Loaded(object sender, RoutedEventArgs e)
+        {
+            // This is necessary to make it not load immediately and see that there's no posts so we've reached the bottom!
+            HomePostList.LayoutUpdated += HomePostList_LayoutUpdated;
+        }
+
+        private void HomePostList_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (HomePostList.Items.Count < MinItemsBeforeScroll)
+                return;
+
+            _scrollViewer = GetScrollViewer(HomePostList);
+
+            if (_scrollViewer != null)
+            {
+                HomePostList.LayoutUpdated -= HomePostList_LayoutUpdated;
+                _scrollViewer.LayoutUpdated += ScrollViewer_LayoutUpdated;
+            }
+        }
+
+        private async void ScrollViewer_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (_scrollViewer == null)
+                return;
+            if (_scrollViewer.ScrollableHeight <= 0)
+                return;
+
+            if (_scrollViewer.VerticalOffset >= _scrollViewer.ScrollableHeight - 25)
+            {
+                // This is the not the best in general, however it's what I have right now.
+                // Please let me know if there is a better way to do pagination that doesn't do this.
+                Debug.WriteLine("Reached the place to load posts at, loading more posts");
+                await LoadPosts();
+            }
+        }
+
         private void ClearUserData()
         {
             SettingsMgr.BskyDid = null;
@@ -185,10 +263,24 @@ namespace CobaltSky
             SettingsMgr.FinishedWelcome = false;
         }
 
+        // JSON for refreshing token
+        public class LoginRoot
+        {
+            [JsonProperty("did")]
+            public string bskyDid { get; set; }
+            [JsonProperty("accessJwt")]
+            public string bskyJwt { get; set; }
+            [JsonProperty("refreshJwt")]
+            public string bskyRefJwt { get; set; }
+        }
+
         // JSON for post handling
         public class FeedResponse
         {
             public List<FeedItem> feed { get; set; }
+
+            // Needed for pagination
+            public string cursor { get; set; }
         }
 
         public class FeedItem
