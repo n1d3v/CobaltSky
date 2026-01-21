@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using System.Windows.Media;
+using CobaltSky.Classes;
+using System.Collections.Generic;
 
 namespace CobaltSky.UserControls
 {
@@ -135,26 +137,46 @@ namespace CobaltSky.UserControls
             }
         }
 
+        private static Regex BuildUrlRegex(HashSet<string> tlds)
+        {
+            var tldList = new System.Text.StringBuilder();
+            bool first = true;
+            foreach (var tld in tlds)
+            {
+                if (!first) tldList.Append("|");
+                tldList.Append(Regex.Escape(tld));
+                first = false;
+            }
+
+            string pattern = @"(@[a-zA-Z0-9._-]+|" +                                                                                    // Mentions like @patricktbp
+                             @"#[a-zA-Z0-9_]+|" +                                                                                       // Hashtags like #cobaltsky
+                             @"https?://[^\s]+|" +                                                                                      // Full URLs like https://example.com (supports http:// also)
+                             @"(?:www\.)[a-zA-Z0-9.-]+\.(?:" + tldList + @")[^\s]*|" +                                                  // www. URLs like www.example.com
+                             @"[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*(?:\.[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*)*\.(?:" + tldList + @")(?:/[^\s]*)?)"; // bare URLs like example.com and example.com/hello
+
+            return new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        }
+
         private static void OnPostTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            var tlds = GlobalHelper.Tlds ?? new HashSet<string>();
+            var regex = BuildUrlRegex(tlds);
+
             var control = d as PostItem;
             if (control == null) return;
 
             string newText = e.NewValue as string ?? string.Empty;
             control.PostTextBlock.Inlines.Clear();
 
-            // example.com will not work for now, need to figure out a safe way to find these simple domain names.
-            var regex = new Regex(
-                @"(@[a-zA-Z0-9._-]+|" +
-                @"https?://[^\s]+|" +
-                @"www\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}[^\s]*)",
-                RegexOptions.IgnoreCase);
             int lastIndex = 0;
 
             foreach (Match m in regex.Matches(newText))
             {
                 if (m.Index > lastIndex)
-                    control.PostTextBlock.Inlines.Add(new Run { Text = newText.Substring(lastIndex, m.Index - lastIndex) });
+                {
+                    control.PostTextBlock.Inlines.Add(
+                        new Run { Text = newText.Substring(lastIndex, m.Index - lastIndex) });
+                }
 
                 control.PostTextBlock.Inlines.Add(new Run
                 {
@@ -167,7 +189,9 @@ namespace CobaltSky.UserControls
             }
 
             if (lastIndex < newText.Length)
+            {
                 control.PostTextBlock.Inlines.Add(new Run { Text = newText.Substring(lastIndex) });
+            }
         }
     }
 }

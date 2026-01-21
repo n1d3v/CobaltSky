@@ -261,6 +261,7 @@
     <Content Include="Images\Setup\back.png" />
     <Content Include="Images\Setup\next.png" />
     <Content Include="Images\Setup\wp-bluesky.png" />
+    <Content Include="tld-list.txt" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />

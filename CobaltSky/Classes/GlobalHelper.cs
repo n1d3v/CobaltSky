@@ -3,13 +3,20 @@ using System.Net;
 using System.Windows.Controls;
 using System.Globalization;
 using System.Windows;
+using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CobaltSky.Classes
 {
     public static class GlobalHelper
     {
+        public static HashSet<string> Tlds { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         public static void SetImageFromUrl(Image imageControl, string imageUrl)
         {
             if (imageControl == null)
@@ -70,6 +77,25 @@ namespace CobaltSky.Classes
             return $"{(int)(span.TotalDays / 365)} year{(span.TotalDays / 365 >= 2 ? "s" : "")} ago";
         }
 
+        public static Task LoadTldsAsync()
+        {
+            return Task.Run(() =>
+            {
+                var uri = new Uri("tld-list.txt", UriKind.Relative);
+                var streamResourceInfo = Application.GetResourceStream(uri);
+                using (var reader = new StreamReader(streamResourceInfo.Stream))
+                {
+                    var txt = reader.ReadToEnd();
+
+                    Tlds = new HashSet<string>(
+                        txt.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                           .Select(t => t.StartsWith(".") ? t.Substring(1) : t),
+                        StringComparer.OrdinalIgnoreCase
+                    );
+                }
+            });
+        }
+
         public class BoolToVisConv : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -83,4 +109,4 @@ namespace CobaltSky.Classes
             }
         }
     }
-}
+} 
