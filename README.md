@@ -19,6 +19,7 @@ This is the current list of features that are implemented, this may change in th
          - [ ] Videos
             - This will be a hard task since Bluesky uses the .m3u8 format, which is not officially supported on Windows Phone, if anyone could get it working before me, please submit a pull request with your code included!
          - [x] Link embeds
+         - [x] Quoted posts 
       - [x] Rich text (Links, mentions, hashtags)
          - This does not function when you click them just yet.
       - [x] Pagination / Infinite scrolling
