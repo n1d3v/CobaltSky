@@ -20,7 +20,6 @@ This is the current list of features that are implemented, this may change in th
             - This will be a hard task since Bluesky uses the .m3u8 format, which is not officially supported on Windows Phone, if anyone could get it working before me, please submit a pull request with your code included!
          - [x] Link embeds
       - [x] Rich text (Links, mentions, hashtags)
-         - This does not support simple links like example.com, the regex does not support this as it would interfere with other stuff, will fix this later.
          - This does not function when you click them just yet.
       - [x] Pagination / Infinite scrolling
          - Can be a little bit buggy due to the implementation, please look at this [code snippet](https://github.com/n1d3v/CobaltSky/blob/7d7f2678698ea6f7d36e9b19b04ce06da7e7f28b/CobaltSky/HomePage.xaml.cs#L237) if you want to attempt to see if you can do anything better than I can.
