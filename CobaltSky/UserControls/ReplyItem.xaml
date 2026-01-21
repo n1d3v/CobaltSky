@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             
     x:Name="Root"
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -16,10 +15,12 @@
         <Border BorderBrush="Gray" BorderThickness="1" Padding="8,12">
             <StackPanel Margin="12,8">
                 <StackPanel x:Name="AuthorInfo" Orientation="Horizontal" Margin="0,0,0,4">
-                    <Image x:Name="ReplyAuthor" Source="..\Images\Home\user-pfp.png" Width="35" HorizontalAlignment="Left" Margin="0,0,10,0" />
-                    <TextBlock Text="patricktbp" VerticalAlignment="Center" />
+                    <Image x:Name="ReplyAuthor" Source="{Binding}" Width="35" HorizontalAlignment="Left" Margin="0,0,10,0" />
+                    <TextBlock x:Name="ReplyDispName" FontWeight="Thin" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock x:Name="ReplyInfo" FontSize="16" FontWeight="Thin" Opacity="0.5" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBlock x:Name="ReplyText" Text="Lorem ipsum, blah blah blah, I don't care." />
+                <TextBlock x:Name="ReplyText" Margin="0,0,0,6" TextWrapping="Wrap" />
+                <Image x:Name="ReplyImage" />
             </StackPanel>
         </Border>
     </Grid>

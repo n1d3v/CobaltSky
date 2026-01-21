@@ -158,19 +158,6 @@ namespace CobaltSky
             }
         }
 
-        private void LoadStringsAndValues()
-        {
-            // Again, kinda a mess not gonna lie...
-            if (SettingsMgr.FeedSelection == "Following")
-                ModifiablePage.Header = "topics";
-
-            if (SettingsMgr.FeedSelection == "Topics")
-                ModifiablePage.Header = "following";
-
-            if (SettingsMgr.FeedSelection == "Both")
-                ModifiablePage.Visibility = Visibility.Collapsed;
-        }
-
         // Navigation functions
         private void PostButton_Click(object sender, EventArgs e)
         {
@@ -198,6 +185,19 @@ namespace CobaltSky
         }
 
         // Helper methods
+        private void LoadStringsAndValues()
+        {
+            // Again, kinda a mess not gonna lie...
+            if (SettingsMgr.FeedSelection == "Following")
+                ModifiablePage.Header = "topics";
+
+            if (SettingsMgr.FeedSelection == "Topics")
+                ModifiablePage.Header = "following";
+
+            if (SettingsMgr.FeedSelection == "Both")
+                ModifiablePage.Visibility = Visibility.Collapsed;
+        }
+
         public static ScrollViewer GetScrollViewer(DependencyObject root)
         {
             if (root is ScrollViewer)
@@ -305,6 +305,11 @@ namespace CobaltSky
                 get { return embed != null && embed.external != null ? Visibility.Visible : Visibility.Collapsed; }
             }
 
+            public Visibility RecordVisibility
+            {
+                get { return embed != null && embed.record != null ? Visibility.Visible : Visibility.Collapsed; }
+            }
+
             public int replyCount { get; set; }
             public int repostCount { get; set; }
             public int likeCount { get; set; }
@@ -333,8 +338,26 @@ namespace CobaltSky
             [JsonProperty("$type")]
             public string Type { get; set; }
 
+            public EmbedRecord record { get; set; }
             public EmbedExternal external { get; set; }
             public List<EmbedImage> images { get; set; }
+        }
+
+        public class EmbedRecord
+        {
+            public Author author { get; set; }
+            public RecordValue value { get; set; }
+            public List<EmbedRecord> embeds { get; set; }
+        }
+
+        public class RecordValue
+        {
+            [JsonProperty("$type")]
+            public string Type { get; set; }
+
+            public string createdAt { get; set; }
+            public string text { get; set; }
+            public Embed embed { get; set; }
         }
 
         public class EmbedExternal
@@ -350,13 +373,6 @@ namespace CobaltSky
             public string thumb { get; set; }
             public string fullsize { get; set; }
             public string alt { get; set; }
-            public AspectRatio aspectRatio { get; set; }
-        }
-
-        public class AspectRatio
-        {
-            public int height { get; set; }
-            public int width { get; set; }
         }
     }
 }
