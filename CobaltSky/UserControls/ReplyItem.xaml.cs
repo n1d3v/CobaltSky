@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Diagnostics;
 
 namespace CobaltSky.UserControls
 {
@@ -98,6 +99,8 @@ namespace CobaltSky.UserControls
         {
             var control = d as ReplyItem;
             var url = e.NewValue as string;
+
+            Debug.WriteLine($"Image URL is: {url}");
             if (!string.IsNullOrEmpty(url))
             {
                 Classes.GlobalHelper.SetImageFromUrl(control.ReplyImage, url);

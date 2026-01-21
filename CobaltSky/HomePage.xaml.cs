@@ -139,6 +139,8 @@ namespace CobaltSky
                     var feedResponse = JsonConvert.DeserializeObject<FeedResponse>(response);
                     BskyCursor = feedResponse.cursor;
 
+                    Debug.WriteLine($"JSON for loading posts: {response}");
+
                     foreach (var item in feedResponse.feed)
                     {
                         var post = item.post;

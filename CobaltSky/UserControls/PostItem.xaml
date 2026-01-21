@@ -36,7 +36,7 @@
 
                 <TextBlock x:Name="PostTextBlock" Grid.Row="0" TextWrapping="Wrap" Visibility="{Binding PostTextVisibility}" HorizontalAlignment="Stretch" Margin="0,0,0,6"/>
                 <uc:PostEmbed x:Name="PostEmbedCont" Thumb="{Binding embed.external.thumb}" Title="{Binding embed.external.title}" Description="{Binding embed.external.description}" Visibility="{Binding EmbedVisibility}" Grid.Row="1" />
-                <uc:ReplyItem x:Name="ReplyCont" Grid.Row="2" AuthorAvatar="{Binding embed.record.author.avatar}" DisplayName="{Binding embed.record.author.displayName}" Info="{Binding embed.record.author.handle}" Text="{Binding embed.record.value.text}" Visibility="{Binding RecordVisibility}"  />
+                <uc:ReplyItem x:Name="ReplyCont" Grid.Row="2" AuthorAvatar="{Binding embed.record.author.avatar}" DisplayName="{Binding embed.record.author.displayName}" Info="{Binding embed.record.author.handle}" Text="{Binding embed.record.value.text}" Visibility="{Binding RecordVisibility}" Image="{Binding embed.record.embeds.images.thumb}"  />
                 <Image x:Name="PostImageCont" Grid.Row="3" Source="{Binding embed.images[0].thumb}" />
                 <MediaElement x:Name="PostVideoCont" Grid.Row="4" Source="{Binding PostVideo}" />
 
